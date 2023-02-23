@@ -1,0 +1,16 @@
+{
+    "include": ["**/*"],
+    "exclude": ["node_modules"],
+    "watchOptions": {
+        "excludeDirectories": ["node_modules"]
+    },
+    "compilerOptions": {
+        "target": "ES2015",
+        "module": "CommonJS",
+        "outDir": "./",
+        "strict": true,
+        "noImplicitAny": true,
+        "strictNullChecks": true,
+        "preserveConstEnums": true
+    }
+}

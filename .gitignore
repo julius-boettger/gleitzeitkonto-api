@@ -1,0 +1,5 @@
+node_modules/
+gleitzeitconfig.json
+package-lock.json
+url.json
+working_times.csv
