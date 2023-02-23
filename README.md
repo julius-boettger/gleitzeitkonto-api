@@ -5,16 +5,16 @@ Entwickelt zur Verwendung in einem spezifischen Unternehmen, dessen Name aus Dat
 # Installation
 
 - Browser aussuchen / installieren: [Microsoft Edge](https://www.microsoft.com/de-de/edge) oder [Google Chrome](https://www.google.com/intl/de_de/chrome/) (vermutlich funktioniert jeder [Chromium](https://www.chromium.org/Home/)-basierte Browser)
-- Alle Node-Packages unter `"dependencies": {...}` in [package.json]() installieren
-- [gleitzeitkonto-api.js]() (JavaScript-Version) oder [gleitzeitkonto-api.ts]() (TypeScript-Version) herunterladen und in dein Projekt einbinden
-    - In [gleitzeitkonto-api.js]()/[gleitzeitkonto-api.ts]() *`require("./url.json")`* durch den Link zur "Meine Zeitenübersicht"-Seite im internen Fiori als String ersetzen, *`"https://..."`*
+- Alle Node-Packages unter `"dependencies": {...}` in [package.json](https://github.com/julius-boettger/gleitzeitkonto-api/blob/master/package.json) installieren
+- [gleitzeitkonto-api.js](https://github.com/julius-boettger/gleitzeitkonto-api/blob/master/gleitzeitkonto-api.js) (JavaScript-Version) oder [gleitzeitkonto-api.ts](https://github.com/julius-boettger/gleitzeitkonto-api/blob/master/gleitzeitkonto-api.ts) (TypeScript-Version) herunterladen und in dein Projekt einbinden
+    - In [gleitzeitkonto-api.js](https://github.com/julius-boettger/gleitzeitkonto-api/blob/master/gleitzeitkonto-api.js)/[gleitzeitkonto-api.ts](https://github.com/julius-boettger/gleitzeitkonto-api/blob/master/gleitzeitkonto-api.ts) *`require("./url.json")`* durch den Link zur "Meine Zeitenübersicht"-Seite im internen Fiori als String ersetzen, *`"https://..."`*
         - Besagten Link einmal manuell im ausgesuchten Browser öffnen und sich ggf. anmelden (und angemeldet bleiben!)
 
 # Benutzung
 
 ## Quellcode
 
-[test.js]() zeigt ein Minimalbeispiel zur Benutzung der API. 
+[test.js](https://github.com/julius-boettger/gleitzeitkonto-api/blob/master/test.js) zeigt ein Minimalbeispiel zur Benutzung der API. 
 
 Ein Objekt der Klasse `GleitzeitkontoAPI` verfügt über zwei Klassenmethoden: `downloadWorkingTimes` und `calculateFromWorkingTimes`. Beide Methoden sowie der Konstruktor sind mit ausführlichen Dokumentationskommentaren im Quellcode versehen.
 
