@@ -7,8 +7,7 @@ Entwickelt zur Verwendung in einem spezifischen Unternehmen, dessen Name aus Dat
 - Browser aussuchen / installieren: [Microsoft Edge](https://www.microsoft.com/de-de/edge) oder [Google Chrome](https://www.google.com/intl/de_de/chrome/) (vermutlich funktioniert jeder [Chromium](https://www.chromium.org/Home/)-basierte Browser)
 - Alle Node-Packages unter `"dependencies": {...}` in [package.json](https://github.com/julius-boettger/gleitzeitkonto-api/blob/master/package.json) installieren
 - [gleitzeitkonto-api.js](https://github.com/julius-boettger/gleitzeitkonto-api/blob/master/gleitzeitkonto-api.js) (JavaScript-Version) oder [gleitzeitkonto-api.ts](https://github.com/julius-boettger/gleitzeitkonto-api/blob/master/gleitzeitkonto-api.ts) (TypeScript-Version) herunterladen und in dein Projekt einbinden
-    - In [gleitzeitkonto-api.js](https://github.com/julius-boettger/gleitzeitkonto-api/blob/master/gleitzeitkonto-api.js)/[gleitzeitkonto-api.ts](https://github.com/julius-boettger/gleitzeitkonto-api/blob/master/gleitzeitkonto-api.ts) *`require("./url.json")`* durch den Link zur "Meine Zeitenübersicht"-Seite im internen Fiori als String ersetzen, *`"https://..."`*
-        - Besagten Link einmal manuell im ausgesuchten Browser öffnen und sich ggf. anmelden (und angemeldet bleiben!)
+- [Hinweise zur Benutzung](#benutzung) lesen :)
 
 # Benutzung
 
@@ -23,6 +22,8 @@ Ein Objekt der Klasse `GleitzeitkontoAPI` verfügt über zwei Klassenmethoden: `
 ### **`constructor`**
 
 Versucht Config aus lokaler Datei zu lesen. Wenn die angegebene Datei nicht existiert oder nicht als korrekte Config-Datei erkannt wird, werden Standard-Werte verwendet und in eine neue Datei unter dem angegebenen Pfad gespeichert ([zur Config-Datei später mehr](#config-datei)).
+
+Der Parameter `url` ist dabei der Link zur "Meine Zeitenübersicht"-Seite im internen Fiori als String, also in der Form `"https://..."`. Besagter Link sollte vor Verwendung der API einmal manuell im ausgesuchten Browser geöffnet werden um sich ggf. anzumelden (und angemeldet zu bleiben!)
 
 ---
 
@@ -66,6 +67,7 @@ Pfad zur ausführbaren Datei [einer der oben genannten Browser](#installation)
 
 ---
 
+### **Nützlicher Hinweis**
 Um den Programmablauf zu vereinfachen/verkürzen können Werte für `startStunden` und `startDatum` aus einem beliebigen **vollständigen** (für einen ganzen Monat) Zeitnachweis entnommen werden:
 
 Fiori => Meine Bescheinigungen => Zeitnachweis

@@ -1,6 +1,6 @@
 {
   "name": "gleitzeitkonto-api",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "API zur automatischen Berechnung des Gleitzeitkontos durch Webscraping",
   "main": "test.js",
   "scripts": {

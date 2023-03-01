@@ -14,7 +14,7 @@ const path = require("path");
 const fs = require("fs");
 /**
  * download csv file of working times and calculate overtime
- * @version 1.0.0
+ * @version 1.0.1
  * @author Julius Böttger
  */
 class GleitzeitkontoAPI {
@@ -23,12 +23,11 @@ class GleitzeitkontoAPI {
      * @param downloadDir absolute path to directory to download files into (will be created if it doesn't exist yet)
      * @param csvFileName file name of csv file to download / read, e.g. `"table.csv"` (must end with `".csv"`)
      * @param configPath absolute or relative path to config json-file, e.g. `"./config.json"` (must end with `".json"`)
+     * @param url url to "meine zeitenübersicht"-page in internal fiori
      * @param logToConsole optional: prints progress updates to console if `true` (default is `false`)
      */
-    constructor(downloadDir, csvFileName, configPath, logToConsole = false) {
+    constructor(downloadDir, csvFileName, configPath, url, logToConsole = false) {
         // error handling
-        /** url for webscraper to download working times from */
-        this.url = require("./url.json");
         // config object (default config is the following)
         this.config = {
             // weekly workload in hours
@@ -52,6 +51,7 @@ class GleitzeitkontoAPI {
         this.downloadDir = downloadDir;
         this.csvFileName = csvFileName;
         this.configPath = configPath;
+        this.url = url;
         this.logToConsole = logToConsole;
         // try to update config with local config.json
         try {
