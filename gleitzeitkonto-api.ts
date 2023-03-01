@@ -4,7 +4,7 @@ import * as fs from "fs";
 
 /**
  * download csv file of working times and calculate overtime
- * @version 1.0.1
+ * @version 1.1.0
  * @author Julius Böttger
  */
 export default class GleitzeitkontoAPI {
@@ -103,28 +103,47 @@ export default class GleitzeitkontoAPI {
     }
 
     /**
-     * adds `x` days to a date-string, e.g. `"01.01.2022" + 1 = "02.01.2022"`
-     * @param date date-string formatted like `"DD.MM.YYYY"`
-     * @param x amount of days to be added to the date
-     * @returns date-string formatted like `"DD.MM.YYYY"`
+     * converts date string like `"01.01.2022"` to `Date` object and adds `dayOffset` (e.g. `"01.01.2022" + 1 = "02.01.2022"`)
+     * @param date date string formatted like `"DD.MM.YYYY"`
+     * @param dayOffset amount of days to be added to the date
      */
-    private offsetDateString(date: string, x: number): string {
-        const inputParts: number[] = date.split(".").map(x => parseInt(x));
-        const dateObject = new Date(inputParts[2], inputParts[1], inputParts[0]);
-        dateObject.setMonth(dateObject.getMonth() - 1);
-        dateObject.setDate(dateObject.getDate() + 1 + x);
-        const outputParts = dateObject.toISOString().substring(0, 10).split("-");
-        return `${outputParts[2]}.${outputParts[1]}.${outputParts[0]}`;
+    private dateStringToObject(date: string, dayOffset: number = 0): Date {
+        const inputParts = date.split(".").map(x => parseInt(x));
+        return new Date(inputParts[2], inputParts[1] - 1, inputParts[0] + 1 + dayOffset);
     }
 
-    /** @returns todays date formatted like `"DD.MM.YYYY"` */
-    private getToday(): string {
-        return new Date().toISOString() // "2022-09-16T10:00:48.780Z"
-            .substring(0, 10)           // "2022-09-16"
-            .split("-")                 // ["2022", "09", "16"]
-            .reverse()                  // ["16", "09", "2022"]
-            .join(".")                  // "16.09.2022"
-        ;  
+    /** converts `Date` object to date string formatted like `"DD.MM.YYYY"` */
+    private dateObjectToString(date: Date): string {
+        return date.toISOString().substring(0, 10).split("-").reverse().join(".");
+    }
+
+    /** retuns date object of monday before given date (if given date is not a monday already)
+     * @param date date string formatted like `"DD.MM.YYYY"`
+    */
+    private getMondayBefore(date: string): Date {
+        let tempDate = this.dateStringToObject(date);
+        // remove variable of time as it shouldn't matter
+        tempDate.setUTCHours(12);
+        // get weekday (sunday = 0)
+        const weekday = tempDate.getDay();
+        // if weekday is not monday: set date to monday before
+        if (weekday != 1) tempDate.setDate(tempDate.getDate() - (weekday + 6) % 7);
+        // return calculated date
+        return tempDate;
+    }
+
+    /** retuns date object of sunday after given date (if given date is not a sunday already)
+     * @param date date string formatted like `"DD.MM.YYYY"` */
+    private getSundayAfter(date: string): Date {
+        let tempDate = this.dateStringToObject(date);
+        // remove variable of time as it shouldn't matter
+        tempDate.setUTCHours(12);
+        // get weekday (sunday = 0)
+        const weekday = tempDate.getDay();
+        // if weekday is not sunday: set date to sunday before
+        if (weekday != 0) tempDate.setDate(tempDate.getDate() + (7 - weekday));
+        // return calculated date
+        return tempDate;
     }
 
     /**
@@ -221,7 +240,9 @@ export default class GleitzeitkontoAPI {
                 // gestern => -1, heute => 0, morgen => 1
                 const offset = states.indexOf(processedEndDatum) - 1;
                 // set processedEndDatum to todays date with calculated offset
-                processedEndDatum = this.offsetDateString(this.getToday(), offset);
+                const date = new Date();
+                date.setDate(date.getDate() + offset);
+                processedEndDatum = this.dateObjectToString(date);
                 this.log(`processed config.endDatum "${this.config.endDatum}": calculated "${processedEndDatum}"`);
             }
         }
@@ -298,69 +319,91 @@ export default class GleitzeitkontoAPI {
         } catch {
             return undefined;
         }
-        
         // parse into 2d-string-array
-        let table: string[][] = file.split("\n").map((s: string) => s.split(";"));
+        let table = file.split("\n").map(s => s.split(";"));
         // delete first element (only contains headlines)
         table.shift();
-        
-        const wochenstundenInMin = this.config.wochenstunden * 60;
-        // date of current entry
-        let lastDate = table[0][0];
-        // overtime in minutes
-        let konto = 0;
-        // sum of working times of a single day
-        let sumOfWorkingTimes = 0;
+        /** returns all table entries which have the given date string and removes them from the table
+         * @param date date string formatted like `"DD.MM.YYYY"` */
+        const getAndRemoveFromTable = (date: string) => {
+            const entries = table.filter(entry => entry[0] == date);
+            table = table.filter(entry => !entries.includes(entry));
+            return entries;
+        }
 
-        // last entry of csv file whose anwesenheitsart is not "9001 Urlaub"
-        const lastEntry = table
-            // filter out vacation entries
+        // date string of last entry in table which is not vacation
+        const lastWorkingDateString = table
+            // filter out vacation entries ("9001 Urlaub")
             .filter(entry => parseInt(entry[1].replace(/[^\d]/g, "")) != 9001)
             // reduce array to its last element
             .filter((value, index, array) => index === array.length - 1)
-            // reduce 2d-array to single entry
-            [0]
-        ;
+            // reduce 2d-array to date of its single entry
+            [0][0];
+
+        // date string of first sunday after last entry in table (if its not a sunday)
+        // this will be the last date that is processed by the algorithm
+        const endDateString = this.dateObjectToString(this.getSundayAfter(lastWorkingDateString));
+
+        // declare variables outside of loop to retain values when iterating
         
-        // for every line of the csv
-        for (let entry of table) {
-            const date = entry[0];
-            // remove everything except digits, then parse to integer
-            const anwesenheitsart = parseInt(entry[1].replace(/[^\d]/g, ""));
-            // calculate working time in minutes
-            const workingTimeInMin = this.minutesBetweenTimeStrings(entry[6], entry[7]);
+        // date object and string of last monday before first entry in table (if its not a monday)
+        let currentDate = this.getMondayBefore(table[0][0]);
+        let currentDateString;
+        // working hours per week in minutes
+        let workingHoursInMin = this.config.wochenstunden * 60;
+        // sum of working times in a week in minutes
+        let workingTimeInMin = 0;
+        // gleitzeitkonto in minutes
+        let konto = 0;
+        // number of processed days (dayCounter%7 is weekday)
+        let dayCounter = 0;
 
-            // reset variables and save overtime if date is a new one
-            if (date != lastDate) {
-                // add sum of working times of lastDate to overtime
-                konto += sumOfWorkingTimes - (wochenstundenInMin / 5);
-                // reset variables
-                lastDate = date;
-                sumOfWorkingTimes = 0;
+        // for every date between last monday before first entry in table and endDateString
+        do {
+            // convert current date object to string
+            currentDateString = this.dateObjectToString(currentDate);
+            // get and remove all table entries with current date
+            const entries = getAndRemoveFromTable(currentDateString);
+
+            // if there are no working time entries on a weekday
+            if (entries.length == 0 && dayCounter%7 < 5) {
+                // the current date has to be a holiday, reduce expected working hours for this week
+                workingHoursInMin -= (this.config.wochenstunden * 60) / 5;
+            }
+            // if there are working time entries
+            else if (entries.length != 0) {
+                // for each entry
+                for (let entry of entries) {
+                    // if "Anwesenheitsart" is not "9003 Gleittag"
+                    if (parseInt(entry[1].replace(/[^\d]/g, "")) != 9003) {
+                        // add working time of entry to sum of current week
+                        workingTimeInMin += this.minutesBetweenTimeStrings(entry[6], entry[7]);
+                    }
+                }
             }
 
-            // if anwesenheitsart is not "9003 Gleittag"
-            if (anwesenheitsart != 9003) {
-                // add working time of current date
-                sumOfWorkingTimes += workingTimeInMin;
+            // if current date is a sunday
+            if (dayCounter % 7 == 6) {
+                // save progress of week
+                konto += workingTimeInMin - workingHoursInMin;
+                // reset working hours (they could have been changed through holiday)
+                workingHoursInMin = this.config.wochenstunden * 60;
+                // reset working time
+                workingTimeInMin = 0;
             }
 
-            // skip entries after lastEntry (break loop if entry and lastEntry are equal)
-            if (entry.every((v, i) => v === lastEntry[i]))
-                break;
+            dayCounter++;
+            // advance current date by one day for next iteration
+            currentDate.setDate(currentDate.getDate() + 1);
         }
+        // repeat until endDateString was processed
+        while (currentDateString != endDateString);
 
-        // process last entry (otherwise wouldn"t get processed because there"s no new date after it)
-        konto += sumOfWorkingTimes - (wochenstundenInMin / 5);
-
-        // add startStunden (in minutes) to overtime
-        konto += Math.round(this.config.startStunden * 60);
-
-        // return overtime (as string and in minutes) and last working date
+        // return gleitzeitkonto (as string and in minutes) and last date with registered working time
         return {
             kontoString: this.minutesToTimeString(konto),
             kontoInMin: konto,
-            lastDate
+            lastDate: lastWorkingDateString
         };
     }
 }
