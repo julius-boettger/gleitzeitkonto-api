@@ -2,6 +2,8 @@
 
 Entwickelt zur Verwendung in einem spezifischen Unternehmen, dessen Name aus Datenschutzgründen nicht erwähnt wird.
 
+> **🚨 Achtung**: Dieses Projekt befindet sich noch in der Entwicklung, den Ergebnissen sollte nicht blind vertraut werden
+
 # Installation
 
 - Browser aussuchen / installieren: [Microsoft Edge](https://www.microsoft.com/de-de/edge) oder [Google Chrome](https://www.google.com/intl/de_de/chrome/) (vermutlich funktioniert jeder [Chromium](https://www.chromium.org/Home/)-basierte Browser)
