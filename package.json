@@ -1,6 +1,6 @@
 {
   "name": "gleitzeitkonto-api",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "API zur automatischen Berechnung des Gleitzeitkontos durch Webscraping",
   "author": "Julius Böttger",
   "license": "MIT",
