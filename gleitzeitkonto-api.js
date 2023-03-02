@@ -14,7 +14,7 @@ const path = require("path");
 const fs = require("fs");
 /**
  * download csv file of working times and calculate overtime
- * @version 1.1.1
+ * @version 1.1.2
  * @author Julius Böttger
  */
 class GleitzeitkontoAPI {
@@ -150,7 +150,7 @@ class GleitzeitkontoAPI {
     minutesToTimeString(minutes) {
         const justHours = Math.floor(Math.abs(minutes) / 60);
         const justMinutes = Math.abs(minutes) - (justHours * 60);
-        return (minutes < 0 ? "-" : "+") +
+        return (minutes == 0 ? "" : (minutes < 0 ? "-" : "+")) +
             (justHours != 0 ? justHours + "h" : "") +
             (justHours != 0 && justMinutes != 0 ? " " : "") +
             (justMinutes != 0 || (justHours === 0 && justMinutes === 0) ? justMinutes + "min" : "");

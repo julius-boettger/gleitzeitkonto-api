@@ -4,7 +4,7 @@ import * as fs from "fs";
 
 /**
  * download csv file of working times and calculate overtime
- * @version 1.1.1
+ * @version 1.1.2
  * @author Julius Böttger
  */
 export default class GleitzeitkontoAPI {
@@ -169,10 +169,10 @@ export default class GleitzeitkontoAPI {
     private minutesToTimeString(minutes: number): string {
         const justHours = Math.floor(Math.abs(minutes) / 60);
         const justMinutes = Math.abs(minutes) - (justHours * 60);
-        return (minutes < 0 ? "-" : "+") + 
-            (justHours != 0 ? justHours+"h" : "") + 
-            (justHours != 0 && justMinutes != 0 ? " " : "") + 
-            (justMinutes != 0 || (justHours === 0 && justMinutes === 0) ? justMinutes+"min" : "");
+        return (minutes == 0 ? "" : (minutes < 0 ? "-" : "+")) + 
+               (justHours != 0 ? justHours+"h" : "") + 
+               (justHours != 0 && justMinutes != 0 ? " " : "") + 
+               (justMinutes != 0 || (justHours === 0 && justMinutes === 0) ? justMinutes+"min" : "");
     }
 
     /**
