@@ -15,9 +15,11 @@ Entwickelt zur Verwendung in einem spezifischen Unternehmen, dessen Name aus Dat
 
 ## Quellcode
 
-[test.js](https://github.com/julius-boettger/gleitzeitkonto-api/blob/master/test.js) zeigt ein Minimalbeispiel zur Benutzung der API. 
+[test.js](https://github.com/julius-boettger/gleitzeitkonto-api/blob/master/test.js) zeigt ein Minimalbeispiel zur Benutzung der API.
 
 Ein Objekt der Klasse `GleitzeitkontoAPI` verfügt über zwei Klassenmethoden: `downloadWorkingTimes` und `calculateFromWorkingTimes`. Beide Methoden sowie der Konstruktor sind mit ausführlichen Dokumentationskommentaren im Quellcode versehen.
+
+Um `downloadWorkingTimes` erfolgreich ausführen zu können musst du dich in einem Netzwerk befinden, welches Zugriff auf das interne Fiori hat (Office (W)LAN oder VPN).
 
 ---
 
