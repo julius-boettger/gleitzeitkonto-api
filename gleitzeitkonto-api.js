@@ -14,7 +14,7 @@ const path = require("path");
 const fs = require("fs");
 /**
  * download csv file of working times and calculate overtime
- * @version 1.1.2
+ * @version 1.1.3
  * @author Julius Böttger
  */
 class GleitzeitkontoAPI {
@@ -290,7 +290,13 @@ class GleitzeitkontoAPI {
             return undefined;
         }
         // parse into 2d-string-array
-        let table = file.split("\n").map(s => s.split(";"));
+        let table = file
+            // split on line breaks to get array of rows
+            .split("\n")
+            // map each line to an array of its fields
+            .map(s => s.split(";"))
+            // filter out invalid lines (that dont have enough fields)
+            .filter(entry => entry[7] != undefined);
         // delete first element (only contains headlines)
         table.shift();
         /** returns all table entries which have the given date string and removes them from the table
